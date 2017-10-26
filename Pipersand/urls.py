@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from game import views as game_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^invoke/', game_views.invoke),
+    url(r'^add/', game_views.add),
 ]
