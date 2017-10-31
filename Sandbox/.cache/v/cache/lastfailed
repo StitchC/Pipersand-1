@@ -1,0 +1,7 @@
+{
+  "test/Company_test.py::CompanyTest::test_can_only_long_loan_in_season_1": true,
+  "test/Company_test.py::CompanyTest::test_end_season": true,
+  "test/Company_test.py::CompanyTest::test_long_loan": true,
+  "test/Company_test.py::CompanyTest::test_short_loan": true,
+  "test/Company_test.py::CompanyTest::test_switch_product": true
+}
