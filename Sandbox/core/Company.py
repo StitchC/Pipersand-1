@@ -182,7 +182,7 @@ class Company(object):
     def buy_workshop(self, workshop_type: str, slot_id):
         """
         在生产中心的slot_id这个格子上面买一个生产线
-        workshop_type是'big','medium','big'
+        workshop_type是'big','medium','small'
         """
         self.production_center.buy(workshop_type, slot_id)
         cost = int(WORKSHOP[workshop_type+'_price'])
@@ -197,6 +197,7 @@ class Company(object):
     def new_line(self, line_type, product_type, workshop_id, slot_id):
         """
         新建生产线
+        line_type: 'Flex','Hand','Auto'
         用line_type和product_type构造一个ProductionLine object
         workshop填workshop的slot_id，表示放在那个厂房
         """

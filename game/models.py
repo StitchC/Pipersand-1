@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import SET_NULL
+from django.contrib.auth.models import User
 
 import json
 from typing import List
@@ -7,9 +8,10 @@ from typing import List
 # class pipersand(models.Model):
 #     def __init__(self):
 #
-class User(models.Model):
-    name = models.CharField(max_length=20)
-    password = models.CharField(max_length=30)
+class MyUser(User):
+    # name = models.CharField(max_length=20)
+    # password = models.CharField(max_length=30)
+    # username和password在父类里面有
     company = models.ForeignKey('Company', on_delete=SET_NULL, null=True)
 
 

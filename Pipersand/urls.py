@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^game/register', game_views.create_user),
     url(r'^game/create_company', game_views.create_company),
     url(r'^game/join_company', game_views.join_company),
+    url(r'^test/(\d+)', game_views.test_param),
 ]
