@@ -1,6 +1,6 @@
 import configparser
 config = configparser.ConfigParser()
-config.read('Sandbox/core/setting.ini')
+config.read('C:/Users/67089/Documents/GitHub/Pipersand/Sandbox/core/setting.ini')
 CASH = int(config['initial_state']['CASH'])
 LOAN_LIMIT_COEFF = int(config['rules']['LOAN_LIMIT_COEFF'])
 PRODUCT_DEV_COST = config['product dev cost']
@@ -81,6 +81,23 @@ class Company(object):
         self.income_statement = income_statement.copy()
 
         self.constructed_line = list().copy()
+
+    def reprJSON(self):
+        return dict(year=self.year,
+                   season=self.season,
+                   cash=self.cash,
+                   long_liability=self.long_liability,
+                   short_liability=self.short_liability,
+                   logistic=self.logistic,
+                   store=self.store,
+                   obtain_order=self.obtain_order,
+                   equity=self.equity,
+                   production_center=self.production_center,
+                   certificate=self.certificate,
+                   expenditures=self.expenditures,
+                   balance_sheet=self.balance_sheet,
+                   income_statement=self.income_statement,
+                   constructed_line=self.constructed_line)
 
     def end_season(self):
         """
@@ -393,3 +410,14 @@ class Company(object):
                 count_ = line.depreciate()
                 count += count_
         self.income_statement['累计折旧'] = count
+
+
+
+
+
+class CompanyJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if hasattr(obj,'reprJSON'):
+            return obj.reprJSON()
+        else:
+            return json.JSONEncoder.default(self, obj)

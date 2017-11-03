@@ -23,7 +23,7 @@ method:
 
 import configparser
 config = configparser.ConfigParser()
-config.read('Sandbox/core/setting.ini')
+config.read('C:/Users/67089/Documents/GitHub/Pipersand/Sandbox/core/setting.ini')
 PRODUCT_COMPONENT = {}  # dict of dict
 for product in ['p1', 'p2', 'p3', 'p4']:
     components = product + ' components'
@@ -46,6 +46,12 @@ class ProductionLine(object):
             self.__class__.__name__,
             self._net_value,
             self._status)
+
+    def reprJSON(self):
+        return dict(product_type=self.product_type,
+                    switch_process=self.switch_process,
+                    produce_process=self.produce_process,
+                    new=self.new)
 
     def depreciate(self):
         """

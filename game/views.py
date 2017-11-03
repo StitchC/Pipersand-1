@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, logout, get_user
+from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 
-from game.models import Company as Company_model
-from game.models import MyUser as User
+from game.models import Company as Company_model, User, Record
 # Create your views here.
 
 import sys
@@ -13,9 +13,11 @@ sys.path.append("C:/Users/67089/Documents/GitHub/Pipersand")
 from Sandbox.core.Company import Company
 
 import json
+import jsonpickle
+from datetime import datetime
 
 # 每次开始游戏，对会在字典里面创建一个key为company_id的Company object
-game_obj = {}
+# game_obj = {}
 
 def home(request):
     return HttpResponse("welcome")
@@ -41,38 +43,39 @@ def login(request):
     username = request.POST['username']
     password = request.POST['password']
     user = authenticate(request, username=username,password=password)
-    if user:
-        login(request, user)
+    if user is not None:
+        auth_login(request, user)
         # Redirect to a success page.
+        return HttpResponse("login successed")
     else:
-        HttpResponse("fuk you")
+        return HttpResponseRedirect('/home')
 
 def logout(request):
     logout(request)
 
 
+@login_required
 def changing_password(request):
     """
     ./modify_password POST
     new_password: 新密码
     """
     new_password = request.POST['new_password']
-    u =
+    u = request.user
     u.set_password(new_password)
     u.save()
     return HttpResponse('ok')
 
 
+@login_required
 def create_company(request):
     """
     一个用户创建一个company，加入到company list里面
     ./game/create_company POST
     company_name: 公司名
-    user_id: 创建者的id
     """
     company_name = request.POST['company_name']
-    founder_id = request.POST['user_id']
-    founder_json = json.dumps([founder_id])
+
 
     new_company = Company_model(company_name=company_name, members=founder_json)
     new_company.save()
@@ -82,6 +85,7 @@ def create_company(request):
 
     return HttpResponse("创建新公司成功")
 
+# @login_required
 def join_company(request):
     """
     选择一个公司加入
@@ -101,19 +105,27 @@ def join_company(request):
 # TODO: 创建房间和加入房间
 # def
 
+@login_required
 def start_game(request):
     """
-    创建或者加入了公司的玩家可以选择一个房间点开始游戏
-    ./game/start_game POST
-    room_id: 房间号
+    # 创建或者加入了公司的玩家可以选择一个房间点开始游戏
+    # ./game/start_game POST
+    # room_id: 房间号
 
-    在字典里面创建一个object, key是user_id对应的company_id
-    user_id: 点开始游戏那个用户的id
+    点开始游戏，创建一个Company object，存到数据库里面
     """
-    user_id = self.request.GET['user_id']
-    company_id = User.objects.get(pk=user_id).company.id
-    if company_id not in game_obj:
-        game_obj[company_id] = Company()
+    c = Company()
+
+    record = Record(status=jsonpickle.dumps(c),
+                    time=datetime.now())
+    record.save()
+    record.players.add(get_user(request))
+    record.save()
+
+    # Record.objects.create(status=jsonpickle.dumps(c),
+    #                 time=datetime.now())
+    #
+    # players=request.user)
 
     return HttpResponse('ok')
 
@@ -234,3 +246,16 @@ def new_line(request):
 
 def test_param(request, msg):
     return HttpResponse(msg)
+
+
+
+# import pickle
+#
+# class company(object):
+#     def __init__(self, workshop, cash):
+#         self.workshop = workshop
+#         self.cash = cash
+#     def work(self):
+#         print(self.workshop)
+#
+# c = company([1,2,3], 60)

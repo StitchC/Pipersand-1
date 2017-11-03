@@ -11,6 +11,12 @@ class Order(object):
         self.delivery_period = delivery_period
         self.account_period = account_period
 
+    def reprJSON(self):
+        return dict(product_type=self.product_type,
+                    num=self.num,
+                    delivery_period=self.delivery_period,
+                    account_period=self.account_period)
+
 
 class ObtainOrder(object):
     """
@@ -19,6 +25,9 @@ class ObtainOrder(object):
     def __init__(self):
         self.orders = []
         # 3种状态，producing, delivered, failed
+
+    def reprJSON(self):
+        return dict(orders=self.orders)
 
     def add(self, order_id):
         """

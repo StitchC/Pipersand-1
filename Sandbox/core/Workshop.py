@@ -13,6 +13,11 @@ class Workshop(object):
     def __getitem__(self, index):
         return self.lines[index - 1]
 
+    def reprJSON(self):
+        return dict(status=self.status,
+                    lines=self.lines,
+                    capacity=self.capacity)
+
     def add_line(self, line, slot_id):
         """
         :param line: 添加到厂房中的生产线

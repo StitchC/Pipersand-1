@@ -13,6 +13,9 @@ class Store(object):
     def __getitem__(self, key):
         return self.store.__getitem__(key)
 
+    def reprJSON(self):
+        return dict(store=self.store)
+
     def put(self, items: dict):
         for item, num in items.items():
             self.store[item] += num

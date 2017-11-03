@@ -1,6 +1,6 @@
 import configparser
 config = configparser.ConfigParser()
-config.read('Sandbox/core/setting.ini')
+config.read('C:/Users/67089/Documents/GitHub/Pipersand/Sandbox/core/setting.ini')
 DISCOUNT_RATE12 = float(config['discount rate']['period12'])
 DISCOUNT_RATE34 = float(config['discount rate']['period34'])
 
@@ -16,6 +16,9 @@ class Receivables(object):
 
     def __init__(self):
         self.recei = deque([0, 0, 0, 0])
+
+    def reprJSON(self):
+        return dict(recei=list(self.recei))
 
     def update(self):
         """返回零账期的应收款金额，其他的往前推一格"""
@@ -68,6 +71,10 @@ class Long_lia(object):
     def __getitem__(self, index):
         return self.lia.__getitem__(index-1)
 
+    def reprJSON(self):
+        return dict(lia=list(self.lia),
+                    interest_rate=self.interest_rate)
+
     def update(self):
         """
         :returns i: 需要还的利息
@@ -93,6 +100,10 @@ class Short_lia(object):
 
     def __getitem__(self, index):
         return self.lia.__getitem__(index-1)
+
+    def reprJSON(self):
+        return dict(lia=list(self.lia),
+                    interest_rate=self.interest_rate)
 
     def add(self, value):
         self.lia[3] += value

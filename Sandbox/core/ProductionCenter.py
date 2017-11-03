@@ -1,6 +1,6 @@
 import configparser
 config = configparser.ConfigParser()
-config.read('Sandbox/core/setting.ini')
+config.read('C:/Users/67089/Documents/GitHub/Pipersand/Sandbox/core/setting.ini')
 PRODUCTION_CENTER_CAPACITY = config['production center capacity']
 
 
@@ -18,6 +18,9 @@ class ProductionCenter(object):
 
     def __getitem__(self, index):
         return self.workshops.__getitem__(index - 1)
+
+    def reprJSON(self):
+        return dict(workshops=self.workshops)
 
     def __len__(self):
         """

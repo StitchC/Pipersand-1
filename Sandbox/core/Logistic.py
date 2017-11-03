@@ -3,7 +3,7 @@ config = configparser.ConfigParser()
 try:
     config.read_file(open('Sandbox/core/setting.ini'))
 except:
-    config.read('setting.ini')
+    config.read('C:/Users/67089/Documents/GitHub/Pipersand/Sandbox/core/setting.ini')
 
 
 
@@ -29,6 +29,9 @@ class Logistic(object):
 
     def __getitem__(self, index):
         return self.material_in_transit[index - 1]
+
+    def reprJSON(self):
+        return dict(material_in_transit=list(self.material_in_transit))
 
     def update(self):
         price = 0   # 需要支付的货款
