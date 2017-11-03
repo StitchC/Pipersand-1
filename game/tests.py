@@ -62,7 +62,7 @@ class GameTestCase(TestCase):
     #
     #     # TODO: views.py里面的companys多了个object，不知道怎么测试
 
-    def test_user_login(self):
+    def test_user_login_then_logout(self):
         # 创建一个闰土
         self.client.post('/game/register',
             data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
@@ -79,6 +79,11 @@ class GameTestCase(TestCase):
             data={'username': 'runtu881', 'password': 'runtuRmumu233'})
         # 确认登录成功
         self.assertEqual(response.status_code, 200)
+
+        # 闰土logout
+        response = self.client.post('/logout')
+        # redirect到主页
+        self.assertEqual(response.status_code, 302)
 
 
 

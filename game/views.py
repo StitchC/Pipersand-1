@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
-from django.contrib.auth import authenticate, logout, get_user
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import authenticate, get_user
+from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 
 from game.models import Company as Company_model, User, Record
@@ -51,7 +51,8 @@ def login(request):
         return HttpResponseRedirect('/home')
 
 def logout(request):
-    logout(request)
+    auth_logout(request)
+    return HttpResponseRedirect('/home')
 
 
 @login_required
