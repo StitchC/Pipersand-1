@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 
 from django.contrib.auth import authenticate, get_user
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 
-from game.models import Company as Company_model, User, Record
+from game.models import Company as Company_model, User, Record, Profile
+from game.forms import long_loanForm
 # Create your views here.
 
 import sys
@@ -31,7 +32,10 @@ def create_user(request):
     username = request.POST['username']
     email = request.POST['email']
     password = request.POST['password']
-    User.objects.create_user(username, email, password)
+
+    user = User.objects.create_user(username, email, password)
+    profile = Profile(user=user)
+    profile.save()
     return HttpResponse("创建新用户成功")
 
 def login(request):
@@ -116,50 +120,18 @@ def start_game(request):
     点开始游戏，创建一个Company object，存到数据库里面
     """
     c = Company()
+    user = get_user(request)
+    profile = user.Profile
 
     record = Record(status=jsonpickle.dumps(c),
                     time=datetime.now())
     record.save()
-    record.players.add(get_user(request))
-    record.save()
+    record.players.add(user)
 
-    # Record.objects.create(status=jsonpickle.dumps(c),
-    #                 time=datetime.now())
-    #
-    # players=request.user)
+    profile.current_game = record
+    profile.save()
 
     return HttpResponse('ok')
-
-
-
-
-
-'''
-helper methods
-'''
-def check_ready_to_start():
-    """
-    check是否可以开始
-    """
-    if len(game_obj) == 10:
-        return True
-    else:
-        return False
-
-def get_company_id(request):
-    """
-    用user_id来get company_id
-    """
-    user_id = request.POST.pop('user_id')
-    company_id = User.objects.get(pk=user_id).company.id
-    return company_id
-
-
-
-
-
-
-
 
 '''
 游戏内的
@@ -168,16 +140,19 @@ def get_company_id(request):
 def long_loan(request):
     """
     ./game/long_loan POST
-    user_id: 用户id
     value: 贷款额
     year: 贷款年限
     """
-    company_id = get_company_id(request)
-    # value = request.POST['value']
-    # year = request.POST['year']
-    game_obj[company_id].long_loan(**request.POST)
+    if request.method == 'POST':
+        record, c = get_company(request)
+        params = json.loads(request.body)
+        c.long_loan(**params)
 
-    return HttpResponse('ok')
+        record.status = jsonpickle.dumps(c)
+        record.save()
+        return HttpResponse('ok')
+    else:
+        return HttpResponseNotAllowed(['POST'])
 
 @login_required
 def short_loan(request):
@@ -250,13 +225,13 @@ def test_param(request, msg):
 
 
 
-# import pickle
-#
-# class company(object):
-#     def __init__(self, workshop, cash):
-#         self.workshop = workshop
-#         self.cash = cash
-#     def work(self):
-#         print(self.workshop)
-#
-# c = company([1,2,3], 60)
+'''
+helper methods
+'''
+def get_company(request):
+    """
+    根据request的session，判断哪个用户点的
+    返回相应的记录和游戏object
+    """
+    user = get_user(request)
+    return user.Profile.current_game, jsonpickle.loads(user.Profile.current_game.status)

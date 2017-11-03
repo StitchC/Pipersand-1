@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^login', game_views.login),
     url(r'^logout', game_views.logout),
     url(r'^game/start_game', game_views.start_game),
+    url(r'^game/long_loan', game_views.long_loan),
 ]

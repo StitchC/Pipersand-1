@@ -1,7 +1,10 @@
 from django.test import TestCase
 # from django.contrib.auth.models import check_pa
 from game.views import create_user, create_company
-from game.models import User, Company, Record
+from game.models import User, Company, Record, Profile
+
+import jsonpickle
+import json
 
 
 
@@ -20,6 +23,10 @@ class GameTestCase(TestCase):
         runtu = User.objects.first()
         self.assertEqual(runtu.username, 'runtu881')
         self.assertTrue(runtu.password, 'runtuRmumu233') # 密码被加密了，不能直接对比
+
+        # 用户有一个对应的Profile
+        self.assertEqual(Profile.objects.count(), 1)
+        self.assertEqual(runtu.Profile, Profile.objects.first())
 
     # def test_user_create_new_company(self):
     #     # 搞一个人来创建公司
@@ -113,6 +120,26 @@ class GameTestCase(TestCase):
         self.assertEqual(Record.objects.count(), 1)
         # 时间是是创建时间
         # self.assertAlmostEqual()
+
         # Record的players里面有闰土
         record = Record.objects.first()
         self.assertTrue(runtu in record.players.all())
+
+        # 闰土Profile的current_game是这条记录
+        self.assertEqual(runtu.Profile.current_game, record)
+
+    def test_long_loan(self):
+        # 创建用户 - 登录 - 开始游戏
+        self.client.post('/game/register',
+            data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
+        self.client.post('/login',
+            data={'username': 'runtu881', 'password': 'runtuRmumu233'})
+        self.client.post('/game/start_game')
+
+        # 长期贷款
+        self.client.post('/game/long_loan',
+                        json.dumps({'value': 20, 'year': 3}),
+                        content_type="application/json")
+        # 把游戏记录调回出来，查看长贷了20，3年
+        c = jsonpickle.loads(User.objects.first().Profile.current_game.status)
+        self.assertEqual(c.long_liability[3], 20)

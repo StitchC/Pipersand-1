@@ -3,10 +3,9 @@
   - dasd
 
 
-#### 长期贷款 /Company/long_loan POST
+#### 长期贷款 /game/long_loan POST content_type="application/json"
 
 params
-- company_id: 公司id
 - value: 贷款额（正整数）
 - year: 年限（[1..6]）
 

@@ -11,13 +11,16 @@ from typing import List
 # class MyUser(User):
 #     # username和password在父类里面有
 #     company = models.ForeignKey('Company', on_delete=SET_NULL, null=True)
+class Profile(models.Model):
+    current_game = models.OneToOneField('Record', default=None, null=True)
+    user = models.OneToOneField(User, default=None, related_name='Profile')
 
 
 class Company(models.Model):
     company_name = models.CharField(max_length=20)
     members = models.CharField(max_length=200)
 
-    # password = model.CharField(max_length=30)
+    # password = models.CharField(max_length=30)
 
     def get_member(self):
         return json.loads(self.members)
