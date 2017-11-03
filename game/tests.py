@@ -121,9 +121,9 @@ class GameTestCase(TestCase):
         # 时间是是创建时间
         # self.assertAlmostEqual()
 
-        # Record的players里面有闰土
+        # Record的player是闰土
         record = Record.objects.first()
-        self.assertTrue(runtu in record.players.all())
+        self.assertEqual(runtu, record.player)
 
         # 闰土Profile的current_game是这条记录
         self.assertEqual(runtu.Profile.current_game, record)
@@ -137,9 +137,40 @@ class GameTestCase(TestCase):
         self.client.post('/game/start_game')
 
         # 长期贷款
-        self.client.post('/game/long_loan',
+        response = self.client.post('/game/long_loan',
                         json.dumps({'value': 20, 'year': 3}),
                         content_type="application/json")
-        # 把游戏记录调回出来，查看长贷了20，3年
-        c = jsonpickle.loads(User.objects.first().Profile.current_game.status)
+        self.assertEqual(response.status_code, 200)
+
+        # 现在有两条记录，一个初始状态，一个长贷了的
+        self.assertEqual(Record.objects.count(), 2)
+
+        # 查看第二条record，第三年长贷有20
+        record = Record.objects.get(pk=2)
+        c = jsonpickle.loads(record.status)
         self.assertEqual(c.long_liability[3], 20)
+
+        # 用户的current_game指向第二条记录
+        user = User.objects.first()
+        # user.refresh_from_db()
+        self.assertEqual(user.Profile.current_game, record)
+
+
+    # def test_roll_back(self):
+    #     # 创建用户 - 登录 - 开始游戏 - 长期贷款
+    #     self.client.post('/game/register',
+    #         data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
+    #     self.client.post('/login',
+    #         data={'username': 'runtu881', 'password': 'runtuRmumu233'})
+    #     self.client.post('/game/start_game')
+    #     self.client.post('/game/long_loan',
+    #                     json.dumps({'value': 20, 'year': 3}),
+    #                     content_type="application/json")
+    #
+    #     # roll back
+    #     self.client.post('/game/roll_back')
+    #     # 删掉了一条记录，剩下一条初始状态的
+    #     self.assertEqual(Record.objects.count(), 1)
+    #     # 现在的这条记录里面没有长贷
+    #     c = jsonpickle.loads(User.objects.first().Profile.current_game.status)
+    #     self.assertEqual(c.long_liability[3], 0)

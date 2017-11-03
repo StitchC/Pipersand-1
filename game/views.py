@@ -124,9 +124,9 @@ def start_game(request):
     profile = user.Profile
 
     record = Record(status=jsonpickle.dumps(c),
-                    time=datetime.now())
+                    time=datetime.now(),
+                    player=user)
     record.save()
-    record.players.add(user)
 
     profile.current_game = record
     profile.save()
@@ -137,6 +137,25 @@ def start_game(request):
 游戏内的
 '''
 @login_required
+def roll_back(request):
+    """
+    ./game/roll_back POST
+    """
+    if request.method == 'POST':
+        user = get_user(request)
+        # 新记录的id
+        new_id = user.Profile.current_game.id
+        # 改current_game pointer
+        user.Profile.current_game = user.Profile.current_game.parent
+        # 删掉新记录
+        Record.objects.get(pk=new_id).delete()
+        return HttpResponse("ok")
+    else:
+        return HttpResponseNotAllowed(['POST'])
+
+
+
+@login_required
 def long_loan(request):
     """
     ./game/long_loan POST
@@ -144,12 +163,26 @@ def long_loan(request):
     year: 贷款年限
     """
     if request.method == 'POST':
-        record, c = get_company(request)
+        user = get_user(request)
+        c = get_company(request)
         params = json.loads(request.body)
         c.long_loan(**params)
 
-        record.status = jsonpickle.dumps(c)
+        # 创建一个新记录
+        record = Record(status=jsonpickle.dumps(c),
+                        time=datetime.now(),
+                        player=user,
+                        parent=user.Profile.current_game)
         record.save()
+
+        # 把user的current_game指向这个新记录
+        # user.Profile.update(current_game=record)
+        profile = user.Profile
+        profile.current_game = record
+        profile.save()
+
+        assert jsonpickle.loads(user.Profile.current_game.status).long_liability[3] == 20
+        assert user.Profile.current_game == record
         return HttpResponse('ok')
     else:
         return HttpResponseNotAllowed(['POST'])
@@ -234,4 +267,4 @@ def get_company(request):
     返回相应的记录和游戏object
     """
     user = get_user(request)
-    return user.Profile.current_game, jsonpickle.loads(user.Profile.current_game.status)
+    return jsonpickle.loads(user.Profile.current_game.status)

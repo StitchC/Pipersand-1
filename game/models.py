@@ -29,7 +29,7 @@ class Company(models.Model):
 class Record(models.Model):
     time = models.DateTimeField()   # 存的是python里面的datetime.datetime instance
     status = models.TextField()
-    players = models.ManyToManyField(User)
+    player = models.ForeignKey(User, default=None, null=True)
     # players = models.CharField(max_length=100) # 一个公司最多5个人，每个人的id不超过20
     parent = models.OneToOneField('self', on_delete=models.CASCADE, related_name='child',
                                   default=None, null=True)
