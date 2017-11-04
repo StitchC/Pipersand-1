@@ -156,21 +156,24 @@ class GameTestCase(TestCase):
         self.assertEqual(user.Profile.current_game, record)
 
 
-    # def test_roll_back(self):
-    #     # 创建用户 - 登录 - 开始游戏 - 长期贷款
-    #     self.client.post('/game/register',
-    #         data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
-    #     self.client.post('/login',
-    #         data={'username': 'runtu881', 'password': 'runtuRmumu233'})
-    #     self.client.post('/game/start_game')
-    #     self.client.post('/game/long_loan',
-    #                     json.dumps({'value': 20, 'year': 3}),
-    #                     content_type="application/json")
-    #
-    #     # roll back
-    #     self.client.post('/game/roll_back')
-    #     # 删掉了一条记录，剩下一条初始状态的
-    #     self.assertEqual(Record.objects.count(), 1)
-    #     # 现在的这条记录里面没有长贷
-    #     c = jsonpickle.loads(User.objects.first().Profile.current_game.status)
-    #     self.assertEqual(c.long_liability[3], 0)
+    def test_roll_back(self):
+        # 创建用户 - 登录 - 开始游戏 - 长期贷款
+        self.client.post('/game/register',
+            data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
+        self.client.post('/login',
+            data={'username': 'runtu881', 'password': 'runtuRmumu233'})
+        self.client.post('/game/start_game')
+        self.client.post('/game/long_loan',
+                        json.dumps({'value': 20, 'year': 3}),
+                        content_type="application/json")
+
+        # roll back
+        self.client.post('/game/roll_back')
+        # Profile还是有1个在没有被删掉
+        self.assertEqual(Profile.objects.count(), 1)
+        # 删掉了一条记录，剩下一条初始状态的
+        self.assertEqual(Record.objects.count(), 1)
+        # 现在的这条记录里面没有长贷
+        user = User.objects.first()
+        c = jsonpickle.loads(user.Profile.current_game.status)
+        self.assertEqual(c.long_liability[3], 0)

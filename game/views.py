@@ -145,8 +145,10 @@ def roll_back(request):
         user = get_user(request)
         # 新记录的id
         new_id = user.Profile.current_game.id
-        # 改current_game pointer
-        user.Profile.current_game = user.Profile.current_game.parent
+        # 改current_game pointer到旧记录
+        profile = user.Profile
+        profile.current_game = profile.current_game.parent
+        profile.save()
         # 删掉新记录
         Record.objects.get(pk=new_id).delete()
         return HttpResponse("ok")

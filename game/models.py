@@ -12,7 +12,7 @@ from typing import List
 #     # username和password在父类里面有
 #     company = models.ForeignKey('Company', on_delete=SET_NULL, null=True)
 class Profile(models.Model):
-    current_game = models.OneToOneField('Record', default=None, null=True)
+    current_game = models.OneToOneField('Record', default=None, null=True, on_delete=SET_NULL)
     user = models.OneToOneField(User, default=None, related_name='Profile')
 
 
@@ -33,5 +33,3 @@ class Record(models.Model):
     # players = models.CharField(max_length=100) # 一个公司最多5个人，每个人的id不超过20
     parent = models.OneToOneField('self', on_delete=models.CASCADE, related_name='child',
                                   default=None, null=True)
-    # child = models.OneToOneField('self', on_delete=models.CASCADE, related_name='parent',
-    #                               default=None)
