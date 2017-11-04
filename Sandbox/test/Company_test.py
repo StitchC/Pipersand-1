@@ -11,8 +11,13 @@ class CompanyTest(TestCase):
         self.assertEqual(self.company.expenditures['ISO资格认证'], 0)
 
     def test_end_season(self):
-        # company = Company()
+        # 短期贷款20
+        self.company.short_loan(20)
+
         self.company.end_season()
+
+        # 短期贷款20还有3个季度要还
+        self.assertEqual(self.company.short_liability[3], 20)
         self.assertEqual(self.company.season, 2)
         self.fail("还有更新管理费，物流状态那些")
 
@@ -21,13 +26,6 @@ class CompanyTest(TestCase):
         self.assertEqual(self.company.long_liability[2], 50)
         # 现金变成60 + 50 = 110
         self.assertEqual(self.company.cash, 110)
-
-        self.fail("测试用户输入有错是否raise Error")
-
-    def test_can_only_long_loan_in_season_1(self):
-        self.company.end_season()
-
-        self.fail("这个时候不能长贷")
 
     def test_update_long_loan(self):
         # 借的是2年的长期贷款，更新后变成1年期的
@@ -48,8 +46,6 @@ class CompanyTest(TestCase):
         self.assertEqual(self.company.cash, 80)
         # 4季后到期的短期贷款有20
         self.assertEqual(self.company.short_liability[4], 20)
-
-        self.fail("测试用户输入有错是否raise Error")
 
     def test_update_short_loan(self):
         self.company.short_loan(value=20)
@@ -337,3 +333,6 @@ class CompanyTest(TestCase):
         # 第四季折旧，手工线折旧1，自动线折旧3，柔性线折旧4
         self.company.depreciate()
         self.assertEqual(self.company.income_statement['累计折旧'], 8)
+
+
+    # def test_
