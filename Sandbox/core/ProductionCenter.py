@@ -41,19 +41,20 @@ class ProductionCenter(object):
 
         ### 之前没有租的，创建一个新的厂房
         capacity = int(PRODUCTION_CENTER_CAPACITY[workshop_type])
-        workshop = Workshop(capacity=capacity, status='buy')
+        workshop = Workshop(capacity=capacity, workshop_type=workshop_type, status='buy')
         # TODO: 闰土判断这个slot是不是空的，别把原来有的厂房覆盖掉了
         # TODO: 状态已经是买的时候，不能在网页的slot_id这个位置点买生产线
         self.workshops[slot_id - 1] = workshop
 
-    def rent(self, workshop_type: str, slot_id: int):
+    def rent(self, workshop_type: str, slot_id: int, rent_season):
         """
         调用..core.Workshop.Workshop()创建一个厂房，然后加到slot里面
+        记录租厂房的时候是第几季度
         """
         capacity = int(PRODUCTION_CENTER_CAPACITY[workshop_type])
-        workshop = Workshop(capacity=capacity, status='rent')
-        # TODO: 闰土判断这个slot是不是空的，别把原来有的厂房覆盖掉了
-        # TODO: 状态已经是买的时候，不能在网页的slot_id这个位置点买生产线
+        workshop = Workshop(capacity=capacity, workshop_type=workshop_type, status='rent')
+        # 记录第几季度租的
+        workshop.rent_season = rent_season
         self.workshops[slot_id - 1] = workshop
 
     def sell(self, slot_id):

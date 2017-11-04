@@ -1,9 +1,15 @@
 # from production_line import *
+import configparser
+config = configparser.ConfigParser()
+config.read('C:/Users/67089/Documents/GitHub/Pipersand/Sandbox/core/setting.ini')
+WORKSHOP = config['workshop']
 
 
 class Workshop(object):
-    def __init__(self, capacity, status=None):
-        self.status = status  # buy, rent or none
+    def __init__(self, capacity, workshop_type, status=None):
+        self.workshop_type = workshop_type
+        self.rent_season = None
+        self.status = status  # 'buy', 'rent' or none
         self.lines = [None for _ in range(capacity)]
         self.capacity = capacity
 
@@ -17,6 +23,22 @@ class Workshop(object):
         return dict(status=self.status,
                     lines=self.lines,
                     capacity=self.capacity)
+
+    def get_rental_cost(self, season):
+        """
+        返回这个厂房在season季度需要支付的租金
+        """
+        # 不是租的不用交租金
+        if self.status != 'rent':
+            return 0
+
+        # 不是这个季度租的不用交
+        if self.rent_season != season:
+            return 0
+
+        return int(WORKSHOP[self.workshop_type + '_rent'])
+
+
 
     def add_line(self, line, slot_id):
         """

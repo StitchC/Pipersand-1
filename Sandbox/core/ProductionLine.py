@@ -84,6 +84,8 @@ class ProductionLine(object):
 
     def has_product(self):
         """
+        end_season()的时候调用
+
         在生产产品之前判断线上有没有产品，然后把生产计时重置
         返回出产的产品类型
         """

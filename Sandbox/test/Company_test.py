@@ -10,16 +10,61 @@ class CompanyTest(TestCase):
     def test_new_company_in_initial_state(self):
         self.assertEqual(self.company.expenditures['ISO资格认证'], 0)
 
-    def test_end_season(self):
+    def test_all(self):
+        '''开始第一季'''
+        # 长期贷款10，6年
+        self.company.long_loan(10, year=6)
         # 短期贷款20
         self.company.short_loan(20)
-
+        # 买小厂房
+        self.company.buy_workshop(workshop_type='small', slot_id=1)
+        # 新建2条自动P1，1条柔性P2
+        self.company.new_line(line_type='Auto', product_type='p1', workshop_id=1, slot_id=1)
+        self.company.new_line(line_type='Auto', product_type='p1', workshop_id=1, slot_id=2)
+        self.company.new_line(line_type='Flex', product_type='p2', workshop_id=1, slot_id=3)
+        # 研发p123
+        self.company.product_dev(['p1', 'p2', 'p2'])
+        '''结束第一季'''
         self.company.end_season()
-
+        # 变成季度2
+        self.assertEqual(self.company.season, 2)
+        # 管理费变成1
+        self.assertEqual(self.company.expenditures['管理费用'], 1)
         # 短期贷款20还有3个季度要还
         self.assertEqual(self.company.short_liability[3], 20)
-        self.assertEqual(self.company.season, 2)
-        self.fail("还有更新管理费，物流状态那些")
+        # 现金60+10+20-30-15-3=42
+        self.assertEqual(self.company.cash, 42)
+
+        '''开始第二季'''
+        # 短期贷款20
+        self.company.short_loan(20)
+        # 3条生产线继续建
+        self.company.construct_line(workshop_id=1, line_id=1)
+        self.company.construct_line(workshop_id=1, line_id=2)
+        self.company.construct_line(workshop_id=1, line_id=3)
+        # 研发p123
+        self.company.product_dev(['p1', 'p2', 'p2'])
+        '''结束第二季'''
+        self.company.end_season()
+        # 管理费变成2
+        self.assertEqual(self.company.expenditures['管理费用'], 2)
+        # 短期贷款2和3都有20
+        self.assertEqual(self.company.short_liability[3], 20)
+        self.assertEqual(self.company.short_liability[2], 20)
+        # 现金42+20-15-3-1=43
+        self.assertEqual(self.company.cash, 43)
+
+
+
+
+
+        # # 订购3个R1，2个R4
+        # self.company.order_raw_material({'r1': 3, 'r4': 2})
+        #
+        # # 仓库里面有3个r1，2个r4下季度到
+        # self.assertEqual(self.company.store['r1'], 3)
+        # self.assertEqual(self.company.logistic[1]['r4'], 2)
+
 
     def test_long_loan(self):
         self.company.long_loan(value=50, year=2)

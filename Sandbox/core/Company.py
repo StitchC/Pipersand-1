@@ -134,6 +134,13 @@ class Company(object):
         if self.season != 4:
             self.season += 1
 
+        # 给1个管理费
+        self.expenditures['管理费用'] += 1
+        self.cash -= 1
+
+        # 短贷更新
+        self.update_short_loan()
+
         # 之前点了在建的生产线，现在更新
         for _ in range(len(self.constructed_line)):
             line = self.constructed_line.pop()
@@ -183,13 +190,10 @@ class Company(object):
         self.cash += value
         self.long_liability.add(value, year)
 
-    # def get_long_loan(self):
-    #     """
-    #     给前端用的，看看有多少长贷,'[1, 2, 3, 4, 6, 5]'json格式
-    #     """
-    #     return json.dumps(self.long_liability.lia)
-
     def _cal_credit_line(self):
+        """
+        根据权益计算贷款额度
+        """
         return LOAN_LIMIT_COEFF * self.equity - \
             sum(self.long_liability) + sum(self.short_liability)
 
@@ -234,7 +238,7 @@ class Company(object):
         self.cash -= cost
 
     def rent_workshop(self, workshop_type: str, slot_id):
-        self.production_center.rent(workshop_type, slot_id)
+        self.production_center.rent(workshop_type, slot_id, rent_season=self.season)
         cost = int(WORKSHOP[workshop_type+'_rent'])
         self.cash -= cost
 
@@ -346,6 +350,10 @@ class Company(object):
             self.certificate[product_type] -= 1
             self.expenditures['产品研发'] += int(PRODUCT_DEV_COST[product_type])
 
+        # 自动调用支付管理费，更新厂房租金
+        self.pay_management_cost()
+        self.pay_rental_cost()
+
     def market_dev(self, markets: List[str]):
         """
         input is a list of market ["国内", "本地"] like this
@@ -439,6 +447,31 @@ class Company(object):
                 count += count_
         self.income_statement['累计折旧'] = count
 
+    '''
+    自动调用的方法
+    '''
+    def pay_management_cost(self):
+        """
+        支付管理费
+
+        在产品研发投资之后自动调用
+        """
+        self.expenditures['管理费用'] += 1
+        self.cash -= 1
+
+    def pay_rental_cost(self):
+        """
+        支付厂房租金
+
+        在产品研发投资之后自动调用
+        """
+        total = 0
+        for workshop in self.production_center:
+            if workshop is not None:
+                total += workshop.get_rental_cost(self.season)
+
+        self.expenditures['厂房租金'] = total
+        self.cash -= total
 
 
 
