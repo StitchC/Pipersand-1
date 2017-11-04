@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed,
+    HttpResponseBadRequest)
 
 from django.contrib.auth import authenticate, get_user
 from django.contrib.auth import login as auth_login, logout as auth_logout
@@ -139,7 +140,7 @@ def start_game(request):
 @login_required
 def roll_back(request):
     """
-    ./game/roll_back POST
+    ./game/util/roll_back POST
     """
     if request.method == 'POST':
         user = get_user(request)
@@ -167,24 +168,40 @@ def long_loan(request):
     if request.method == 'POST':
         user, c = get_user_company(request)
         params = json.loads(request.body)
+
         c.long_loan(**params)
-
         forward_record(user, c)
-
         return HttpResponse('ok')
     else:
         return HttpResponseNotAllowed(['POST'])
 
 @login_required
+def cmd_proxy(request, cmd):
+    """
+    处理所有API文档里面的所有命令，参数看文档
+    ./game/(\w+) POST json
+    """
+    if request.method == 'POST':
+        user, c = get_user_company(request)
+        params = json.loads(request.body)
+
+        print(cmd)
+        getattr(c, cmd)(**params)
+        forward_record(user, c)
+        return HttpResponse('ok')
+    else:
+        return HttpResponseNotAllowed(['POST'])
+
+
+
+@login_required
 def short_loan(request):
     """
     ./game/short_loan POST
-    user_id: 用户id
     value: 贷款额
     """
-    company_id = get_company_id(request)
-    # value = request.POST['value']
-    game_obj[company_id].short_loan(**request.POST)
+    if request.method == 'POST':
+        user, c = get_user_company(request)
 
     return HttpResponse('ok')
 

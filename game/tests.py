@@ -13,7 +13,7 @@ import json
 
 class GameTestCase(TestCase):
     def test_new_user_register(self):
-        response = self.client.post('/game/register',
+        response = self.client.post('/register',
             data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
         # 状态码是200
         self.assertEqual(response.status_code, 200)
@@ -30,7 +30,7 @@ class GameTestCase(TestCase):
 
     # def test_user_create_new_company(self):
     #     # 搞一个人来创建公司
-    #     self.client.post('/game/register',
+    #     self.client.post('/register',
     #         data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
     #     founder = User.objects.first()
     #
@@ -50,13 +50,13 @@ class GameTestCase(TestCase):
     #
     # def test_can_join_company(self):
     #     # 一个创建者和一个公司
-    #     self.client.post('/game/register',
+    #     self.client.post('/register',
     #         data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
     #     founder = User.objects.first()
     #     self.client.post('/game/create_company',
     #         data={'user_id': founder.id, 'company_name': '激情骄阳'})
     #     # 创建一个新用户
-    #     self.client.post('/game/register',
+    #     self.client.post('/register',
     #         data={'username': 'khachiyan', 'password': 'aladeen!motherfuker', 'email': 'ss@me.com'})
     #     # 新用户加入公司
     #     self.client.post('/game/join_company',
@@ -71,7 +71,7 @@ class GameTestCase(TestCase):
 
     def test_user_login_then_logout(self):
         # 创建一个闰土
-        self.client.post('/game/register',
+        self.client.post('/register',
             data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
         runtu = User.objects.first()
 
@@ -99,7 +99,7 @@ class GameTestCase(TestCase):
     '''
     def test_start_game(self):
         # 创建一个闰土
-        self.client.post('/game/register',
+        self.client.post('/register',
             data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
         runtu = User.objects.first()
 
@@ -112,7 +112,7 @@ class GameTestCase(TestCase):
         #     data={'company_name': '激情骄阳'})
 
         # 闰土点开始游戏
-        response = self.client.post('/game/start_game')
+        response = self.client.post('/start_game')
 
         self.assertEqual(response.status_code, 200)
 
@@ -130,11 +130,11 @@ class GameTestCase(TestCase):
 
     def test_long_loan(self):
         # 创建用户 - 登录 - 开始游戏
-        self.client.post('/game/register',
+        self.client.post('/register',
             data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
         self.client.post('/login',
             data={'username': 'runtu881', 'password': 'runtuRmumu233'})
-        self.client.post('/game/start_game')
+        self.client.post('/start_game')
 
         # 长期贷款
         response = self.client.post('/game/long_loan',
@@ -158,17 +158,17 @@ class GameTestCase(TestCase):
 
     def test_roll_back(self):
         # 创建用户 - 登录 - 开始游戏 - 长期贷款
-        self.client.post('/game/register',
+        self.client.post('/register',
             data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
         self.client.post('/login',
             data={'username': 'runtu881', 'password': 'runtuRmumu233'})
-        self.client.post('/game/start_game')
+        self.client.post('/start_game')
         self.client.post('/game/long_loan',
                         json.dumps({'value': 20, 'year': 3}),
                         content_type="application/json")
 
         # roll back
-        self.client.post('/game/roll_back')
+        self.client.post('/game/util/roll_back')
         # Profile还是有1个在没有被删掉
         self.assertEqual(Profile.objects.count(), 1)
         # 删掉了一条记录，剩下一条初始状态的

@@ -20,13 +20,14 @@ from game import views as game_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', game_views.home),
-    url(r'^game/register', game_views.create_user),
     url(r'^game/create_company', game_views.create_company),
     url(r'^game/join_company', game_views.join_company),
-    url(r'^test/(\d+)', game_views.test_param),
+    url(r'^register', game_views.create_user),
     url(r'^login', game_views.login),
     url(r'^logout', game_views.logout),
-    url(r'^game/start_game', game_views.start_game),
+    url(r'^start_game', game_views.start_game),
+    url(r'^game/(\w+)$', game_views.cmd_proxy),
+    url(r'^game/util/roll_back', game_views.roll_back),
     url(r'^game/long_loan', game_views.long_loan),
-    url(r'^game/roll_back', game_views.roll_back),
+    url(r'^test/(\d+)', game_views.test_param),
 ]
