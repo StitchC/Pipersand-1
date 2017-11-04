@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate, get_user
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 
+from django.utils import timezone
+
 from game.models import Company as Company_model, User, Record, Profile
 from game.forms import long_loanForm
 # Create your views here.
@@ -125,7 +127,7 @@ def start_game(request):
     profile = user.Profile
 
     record = Record(status=jsonpickle.dumps(c),
-                    time=datetime.now(),
+                    time=timezone.now(),
                     player=user)
     record.save()
 
@@ -185,7 +187,6 @@ def cmd_proxy(request, cmd):
         user, c = get_user_company(request)
         params = json.loads(request.body)
 
-        print(cmd)
         getattr(c, cmd)(**params)
         forward_record(user, c)
         return HttpResponse('ok')
@@ -194,68 +195,68 @@ def cmd_proxy(request, cmd):
 
 
 
-@login_required
-def short_loan(request):
-    """
-    ./game/short_loan POST
-    value: 贷款额
-    """
-    if request.method == 'POST':
-        user, c = get_user_company(request)
-
-    return HttpResponse('ok')
-
-
-@login_required
-def order_raw_material(request):
-    """
-    ./game/order_raw_material POST
-    user_id: 用户id
-    order: 原材料订单，json格式，例如order = {'r1': 3, 'r2': 2, 'r3': 1, 'r4': 1}
-    """
-    company_id = get_company_id(request)
-    json_order = request.POST['order']
-    # 把json的字符串转成数字
-    for key, value in json_order.items():
-        json_order[key] = int(value)
-
-    game_obj[company_id].order_raw_material(json_order)
-
-    return HttpResponse('ok')
-
-
-@login_required
-def buy_workshop(request):
-    """
-    ./game/buy_workshop POST
-    user_id: 用户id
-    workshop_type: str, 'big','medium','small'
-    slot_id: 用户点的那块地的id
-    """
-    company_id = get_company_id(request)
-    workshop_type = request.POST['workshop_type']
-    slot_id = request.POST['slot_id']
-
-    game_obj[company_id].buy_workshop(workshop_type, slot_id)
-
-    return HttpResponse('ok')
-
-
-@login_required
-def new_line(request):
-    """
-    ./game/neww_line POST
-    user_id: 用户id
-    line_type: 生产线类型，'Flex','Hand','Auto'
-    product_type: 产品类型，'p1', 'p2', 'p3', 'p4'
-    workshop_id: 在哪个厂房里面点的新建生产线
-    slot_id: 生产线放在厂房的哪一格
-    """
-    company_id = get_company_id(request)
-    line_type = request.POST['line_type']
-    product_type = request.POST['product_type']
-    workshop_id = request.POST['workshop_id']
-    # slot_id =
+# @login_required
+# def short_loan(request):
+#     """
+#     ./game/short_loan POST
+#     value: 贷款额
+#     """
+#     if request.method == 'POST':
+#         user, c = get_user_company(request)
+#
+#     return HttpResponse('ok')
+#
+#
+# @login_required
+# def order_raw_material(request):
+#     """
+#     ./game/order_raw_material POST
+#     user_id: 用户id
+#     order: 原材料订单，json格式，例如order = {'r1': 3, 'r2': 2, 'r3': 1, 'r4': 1}
+#     """
+#     company_id = get_company_id(request)
+#     json_order = request.POST['order']
+#     # 把json的字符串转成数字
+#     for key, value in json_order.items():
+#         json_order[key] = int(value)
+#
+#     game_obj[company_id].order_raw_material(json_order)
+#
+#     return HttpResponse('ok')
+#
+#
+# @login_required
+# def buy_workshop(request):
+#     """
+#     ./game/buy_workshop POST
+#     user_id: 用户id
+#     workshop_type: str, 'big','medium','small'
+#     slot_id: 用户点的那块地的id
+#     """
+#     company_id = get_company_id(request)
+#     workshop_type = request.POST['workshop_type']
+#     slot_id = request.POST['slot_id']
+#
+#     game_obj[company_id].buy_workshop(workshop_type, slot_id)
+#
+#     return HttpResponse('ok')
+#
+#
+# @login_required
+# def new_line(request):
+#     """
+#     ./game/neww_line POST
+#     user_id: 用户id
+#     line_type: 生产线类型，'Flex','Hand','Auto'
+#     product_type: 产品类型，'p1', 'p2', 'p3', 'p4'
+#     workshop_id: 在哪个厂房里面点的新建生产线
+#     slot_id: 生产线放在厂房的哪一格
+#     """
+#     company_id = get_company_id(request)
+#     line_type = request.POST['line_type']
+#     product_type = request.POST['product_type']
+#     workshop_id = request.POST['workshop_id']
+#     # slot_id =
 
 
 def test_param(request, msg):
@@ -282,7 +283,7 @@ def forward_record(user, c):
     """
     # 创建一个新记录
     record = Record(status=jsonpickle.dumps(c),
-                    time=datetime.now(),
+                    time=timezone.now(),
                     player=user,
                     parent=user.Profile.current_game)
     record.save()
