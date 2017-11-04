@@ -165,26 +165,12 @@ def long_loan(request):
     year: 贷款年限
     """
     if request.method == 'POST':
-        user = get_user(request)
-        c = get_company(request)
+        user, c = get_user_company(request)
         params = json.loads(request.body)
         c.long_loan(**params)
 
-        # 创建一个新记录
-        record = Record(status=jsonpickle.dumps(c),
-                        time=datetime.now(),
-                        player=user,
-                        parent=user.Profile.current_game)
-        record.save()
+        forward_record(user, c)
 
-        # 把user的current_game指向这个新记录
-        # user.Profile.update(current_game=record)
-        profile = user.Profile
-        profile.current_game = record
-        profile.save()
-
-        assert jsonpickle.loads(user.Profile.current_game.status).long_liability[3] == 20
-        assert user.Profile.current_game == record
         return HttpResponse('ok')
     else:
         return HttpResponseNotAllowed(['POST'])
@@ -263,10 +249,28 @@ def test_param(request, msg):
 '''
 helper methods
 '''
-def get_company(request):
+def get_user_company(request):
     """
     根据request的session，判断哪个用户点的
-    返回相应的记录和游戏object
+    返回相应的user, game_object
     """
     user = get_user(request)
-    return jsonpickle.loads(user.Profile.current_game.status)
+    return user, jsonpickle.loads(user.Profile.current_game.status)
+
+
+def forward_record(user, c):
+    """
+    根据c(current_game object)
+    向前更新user的current_game Record
+    """
+    # 创建一个新记录
+    record = Record(status=jsonpickle.dumps(c),
+                    time=datetime.now(),
+                    player=user,
+                    parent=user.Profile.current_game)
+    record.save()
+
+    # 把user的current_game指向这个新记录
+    profile = user.Profile
+    profile.current_game = record
+    profile.save()
