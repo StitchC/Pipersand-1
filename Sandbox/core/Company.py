@@ -134,10 +134,6 @@ class Company(object):
         if self.season != 4:
             self.season += 1
 
-        # 给1个管理费
-        self.expenditures['管理费用'] += 1
-        self.cash -= 1
-
         # 短贷更新
         self.update_short_loan()
 
@@ -145,9 +141,6 @@ class Company(object):
         for _ in range(len(self.constructed_line)):
             line = self.constructed_line.pop()
             line.construct()
-
-        # 物流状态更新
-        self.update_raw_material()
 
     def end_year(self):
         """
@@ -212,13 +205,8 @@ class Company(object):
         self.cash += value
         self.short_liability.add(value)
 
-    def update_raw_material(self):
-        """
-        原材料入库/更新原料订单
-        """
-        price, items = self.logistic.update()
-        self.cash -= price
-        self.store.put(items)
+        # 自动调用update_raw_material,原材料入库/更新材料订单
+        self.update_raw_material()
 
     def order_raw_material(self, order):
         """
@@ -350,9 +338,10 @@ class Company(object):
             self.certificate[product_type] -= 1
             self.expenditures['产品研发'] += int(PRODUCT_DEV_COST[product_type])
 
-        # 自动调用支付管理费，更新厂房租金
-        self.pay_management_cost()
-        self.pay_rental_cost()
+        # 第一到三季度自动调用支付管理费，更新厂房租金，第四季度是开拓完市场自动调用
+        if self.season in range(1, 4):
+            self.pay_management_cost()
+            self.pay_rental_cost()
 
     def market_dev(self, markets: List[str]):
         """
@@ -463,7 +452,7 @@ class Company(object):
         """
         支付厂房租金
 
-        在产品研发投资之后自动调用
+        在产品研发投资之后自动调用,第四季度在开拓市场之后调用
         """
         total = 0
         for workshop in self.production_center:
@@ -472,6 +461,16 @@ class Company(object):
 
         self.expenditures['厂房租金'] = total
         self.cash -= total
+
+    def update_raw_material(self):
+        """
+        原材料入库/更新原料订单
+
+        在申请短期贷款之后自动调用
+        """
+        price, items = self.logistic.update()
+        self.cash -= price
+        self.store.put(items)
 
 
 

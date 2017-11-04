@@ -1,5 +1,4 @@
 {
-  "test/Company_test.py::CompanyTest::test_all": true,
   "test/Company_test.py::CompanyTest::test_auto_produce": true,
   "test/Company_test.py::CompanyTest::test_product_dev": true,
   "test/Company_test.py::CompanyTest::test_switch_product": true

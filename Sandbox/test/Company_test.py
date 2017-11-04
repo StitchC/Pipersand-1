@@ -23,17 +23,15 @@ class CompanyTest(TestCase):
         self.company.new_line(line_type='Auto', product_type='p1', workshop_id=1, slot_id=2)
         self.company.new_line(line_type='Flex', product_type='p2', workshop_id=1, slot_id=3)
         # 研发p123
-        self.company.product_dev(['p1', 'p2', 'p2'])
+        self.company.product_dev(['p1', 'p2', 'p3'])
         '''结束第一季'''
         self.company.end_season()
         # 变成季度2
         self.assertEqual(self.company.season, 2)
-        # 管理费变成1
-        self.assertEqual(self.company.expenditures['管理费用'], 1)
         # 短期贷款20还有3个季度要还
         self.assertEqual(self.company.short_liability[3], 20)
-        # 现金60+10+20-30-15-3=42
-        self.assertEqual(self.company.cash, 42)
+        # 现金60+10+20-30-15-3-1=41
+        self.assertEqual(self.company.cash, 41)
 
         '''开始第二季'''
         # 短期贷款20
@@ -43,27 +41,57 @@ class CompanyTest(TestCase):
         self.company.construct_line(workshop_id=1, line_id=2)
         self.company.construct_line(workshop_id=1, line_id=3)
         # 研发p123
-        self.company.product_dev(['p1', 'p2', 'p2'])
+        self.company.product_dev(['p1', 'p2', 'p3'])
         '''结束第二季'''
         self.company.end_season()
-        # 管理费变成2
-        self.assertEqual(self.company.expenditures['管理费用'], 2)
         # 短期贷款2和3都有20
-        self.assertEqual(self.company.short_liability[3], 20)
         self.assertEqual(self.company.short_liability[2], 20)
-        # 现金42+20-15-3-1=43
-        self.assertEqual(self.company.cash, 43)
+        self.assertEqual(self.company.short_liability[3], 20)
+        # 现金41+20-15-3-1=42
+        self.assertEqual(self.company.cash, 42)
 
+        '''开始第三季'''
+        # 短期贷款20
+        self.company.short_loan(20)
+        # 订1个r3
+        self.company.order_raw_material({'r3': 1})
+        # 柔性线继续建
+        self.company.construct_line(workshop_id=1, line_id=3)
+        # 研发p23
+        self.company.product_dev(['p2', 'p3'])
+        '''结束第三季'''
+        self.company.end_season()
+        # 短期贷款123都有20
+        self.assertEqual(self.company.short_liability[1], 20)
+        self.assertEqual(self.company.short_liability[2], 20)
+        self.assertEqual(self.company.short_liability[3], 20)
+        # r3还有2个季度到,因为还没到第四季更新原材料状态
+        self.assertEqual(self.company.logistic[2]['r3'], 1)
+        # 现金42+20-5-2-1=54
+        self.assertEqual(self.company.cash, 54)
 
-
-
-
-        # # 订购3个R1，2个R4
-        # self.company.order_raw_material({'r1': 3, 'r4': 2})
-        #
-        # # 仓库里面有3个r1，2个r4下季度到
-        # self.assertEqual(self.company.store['r1'], 3)
-        # self.assertEqual(self.company.logistic[1]['r4'], 2)
+        '''开始第四季'''
+        # 短期贷款
+        self.company.short_loan(20)
+        # r3还有1个季度到
+        self.assertEqual(self.company.logistic[1]['r3'], 1)
+        # 订1个r3，1个r2，2个r1
+        self.company.order_raw_material({'r3': 1, 'r2': 1, 'r1': 2})
+        # 自动线继续建
+        self.company.construct_line(workshop_id=1, line_id=1)
+        self.company.construct_line(workshop_id=1, line_id=1)
+        # 研发p23
+        self.company.product_dev(['p2', 'p3'])
+        '''结束第四季'''
+        # 短期贷款1234都有20
+        self.assertEqual(self.company.short_liability[1], 20)
+        self.assertEqual(self.company.short_liability[2], 20)
+        self.assertEqual(self.company.short_liability[3], 20)
+        self.assertEqual(self.company.short_liability[4], 20)
+        # 1个r2，r3，2个r1，都是1个季度后到
+        self.assertEqual(self.company.logistic[1]['r1'], 2)
+        self.assertEqual(self.company.logistic[1]['r2'], 1)
+        self.assertEqual(self.company.logistic[1]['r3'], 1)
 
 
     def test_long_loan(self):
