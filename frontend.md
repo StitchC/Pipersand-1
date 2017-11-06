@@ -1,6 +1,5 @@
 #### 广告投放
-参数:
-  - dasd
+
 
 
 #### 长期贷款 /game/long_loan POST content_type="application/json"
@@ -11,7 +10,7 @@ json keys
 
 return
 - {'code': 200, 'msg': '成功'}
-- {'code': 401, 'msg': '额度不足, 可用额度xxx'}
+- {'code': 400, 'msg': '贷款额度不足'}
 
 
 #### 短期贷款 /Company/short_loan POST content_type="application/json"
@@ -20,7 +19,7 @@ json keys
 
 return
 - {'code': 200, 'msg': '成功'}
-- {'code': 401, 'msg': '额度不足, 可用额度xxx'}
+- {'code': 400, 'msg': '贷款额度不足'}
 
 
 #### 下原料订单 /Company/order_raw_material POST content_type="application/json"
@@ -30,10 +29,8 @@ json keys
 - r3: (int) r3原材料数量
 - r4: (int) r4原材料数量
 
-
 return
 - {'code': 200, 'msg': '成功'}
-<!-- - {'code': 400, 'msg': '成功'} -->
 
 
 #### 购买租用厂房 /Company/but_rent_workshop POST content_type="application/json"
@@ -43,7 +40,7 @@ json keys
 
 return
 - {'code': 200, 'msg': '成功'}
-- {'code': 402, 'msg': '没钱了，吃屎'}
+- {'code': 400, 'msg': '现金不足'}
 
 
 #### 新建生产线 /Company/new_line content_type="application/json"
@@ -55,7 +52,7 @@ json keys
 
 return
 - {'code': 200, 'msg': '成功'}
-- {'code': 402, 'msg': '没钱了，吃屎'}
+- {'code': 400, 'msg': '现金不足'}
 
 
 #### 在建生产线 /Company/construct_line content_type="application/json"
@@ -65,7 +62,7 @@ json keys
 
 return
 - {'code': 200, 'msg': '成功'}
-- {'code': 402, 'msg': '没钱了，吃屎'}
+- {'code': 400, 'msg': '现金不足'}
 
 
 #### 生产线转产 Company/switch_product content_type="application/json"
@@ -76,7 +73,7 @@ json keys
 
 return
 - {'code': 200, 'msg': '成功'}
-- {'code': 402, 'msg': '没钱了，吃屎'}
+- {'code': 400, 'msg': '现金不足'}
 
 
 #### 变卖生产线 Company/sell_line content_type="application/json"
