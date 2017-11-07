@@ -19,7 +19,7 @@ from game import views as game_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', game_views.home),
+    url(r'^get_token/', game_views.set_cookie),
     url(r'^game/create_company', game_views.create_company),
     url(r'^game/join_company', game_views.join_company),
     url(r'^register', game_views.create_user),

@@ -25,7 +25,7 @@ from datetime import datetime
 # game_obj = {}
 
 @ensure_csrf_cookie
-def home(request):
+def set_cookie(request):
     return HttpResponse("welcome")
 
 def create_user(request):
