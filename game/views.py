@@ -2,16 +2,12 @@ from django.shortcuts import render
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed,
     HttpResponseBadRequest)
 
-from django.contrib.auth import authenticate, get_user
-from django.contrib.auth import login as auth_login, logout as auth_logout
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import ensure_csrf_cookie
-
 from django.utils import timezone
 
-from game.models import Company as Company_model, User, Record, Profile
+from game.models import Company as Company_model, Record, Profile
 from game.forms import long_loanForm
-# Create your views here.
+
+from django.contrib.auth.decorators import login_required
 
 import sys
 sys.path.append("C:/Users/67089/Documents/GitHub/Pipersand")
@@ -21,122 +17,6 @@ import json
 import jsonpickle
 from datetime import datetime
 
-# 每次开始游戏，对会在字典里面创建一个key为company_id的Company object
-# game_obj = {}
-
-@ensure_csrf_cookie
-def set_cookie(request):
-    return HttpResponse("welcome")
-
-def create_user(request):
-    """
-    ./game/register POST
-    name: 用户名
-    password: 密码
-    """
-    username = request.POST['username']
-    email = request.POST['email']
-    password = request.POST['password']
-
-    user = User.objects.create_user(username, email, password)
-    profile = Profile(user=user)
-    profile.save()
-    return HttpResponse("创建新用户成功")
-
-def login(request):
-    """
-    ./login POST
-    username: 用户名
-    password: 密码
-    """
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(request, username=username,password=password)
-    if user is not None:
-        auth_login(request, user)
-        # Redirect to a success page.
-        return HttpResponse("login successed")
-    else:
-        return HttpResponseRedirect('/home')
-
-def logout(request):
-    auth_logout(request)
-    return HttpResponseRedirect('/home')
-
-
-@login_required
-def changing_password(request):
-    """
-    ./modify_password POST
-    new_password: 新密码
-    """
-    new_password = request.POST['new_password']
-    u = request.user
-    u.set_password(new_password)
-    u.save()
-    return HttpResponse('ok')
-
-
-@login_required
-def create_company(request):
-    """
-    一个用户创建一个company，加入到company list里面
-    ./game/create_company POST
-    company_name: 公司名
-    """
-    company_name = request.POST['company_name']
-
-
-    new_company = Company_model(company_name=company_name, members=founder_json)
-    new_company.save()
-    founder = User.objects.filter(pk=founder_id)[0]
-    founder.company = new_company
-    founder.save()
-
-    return HttpResponse("创建新公司成功")
-
-# @login_required
-def join_company(request):
-    """
-    选择一个公司加入
-    ./game/join_company POST
-    company_name: 要加入的公司名
-    user_id: 要加入的用户的id
-    """
-    company_name = request.POST['company_name']
-    user_id = request.POST['user_id']
-    company = Company_model.objects.get(company_name=company_name)
-    user = User.objects.get(pk=user_id)
-    user.company = company
-    user.save()
-
-    return HttpResponse("加入公司成功")
-
-# TODO: 创建房间和加入房间
-# def
-
-@login_required
-def start_game(request):
-    """
-    # 创建或者加入了公司的玩家可以选择一个房间点开始游戏
-    # ./game/start_game POST
-    # room_id: 房间号
-
-    点开始游戏，创建一个Company object，存到数据库里面
-    """
-    c = Company()
-    user = get_user(request)
-    profile = user.Profile
-
-    record = Record(status=jsonpickle.dumps(c),
-                    time=timezone.now(),
-                    player=user)
-    record.save()
-
-    profile.current_game = record
-    profile.save()
-
-    return HttpResponse('ok')
 
 '''
 游戏内的
@@ -294,3 +174,42 @@ def forward_record(user, c):
     profile = user.Profile
     profile.current_game = record
     profile.save()
+
+
+# @login_required
+# def create_company(request):
+#     """
+#     一个用户创建一个company，加入到company list里面
+#     ./game/create_company POST
+#     company_name: 公司名
+#     """
+#     company_name = request.POST['company_name']
+#
+#
+#     new_company = Company_model(company_name=company_name, members=founder_json)
+#     new_company.save()
+#     founder = User.objects.filter(pk=founder_id)[0]
+#     founder.company = new_company
+#     founder.save()
+#
+#     return HttpResponse("创建新公司成功")
+#
+# # @login_required
+# def join_company(request):
+#     """
+#     选择一个公司加入
+#     ./game/join_company POST
+#     company_name: 要加入的公司名
+#     user_id: 要加入的用户的id
+#     """
+#     company_name = request.POST['company_name']
+#     user_id = request.POST['user_id']
+#     company = Company_model.objects.get(company_name=company_name)
+#     user = User.objects.get(pk=user_id)
+#     user.company = company
+#     user.save()
+#
+#     return HttpResponse("加入公司成功")
+#
+# # TODO: 创建房间和加入房间
+# # def

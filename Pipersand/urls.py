@@ -13,21 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 from game import views as game_views
+from common import views as common_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^get_token/', game_views.set_cookie),
-    url(r'^game/create_company', game_views.create_company),
-    url(r'^game/join_company', game_views.join_company),
-    url(r'^register', game_views.create_user),
-    url(r'^login', game_views.login),
-    url(r'^logout', game_views.logout),
-    url(r'^start_game', game_views.start_game),
-    url(r'^game/(\w+)$', game_views.cmd_proxy),
-    url(r'^game/util/roll_back', game_views.roll_back),
-    url(r'^game/long_loan', game_views.long_loan),
-    url(r'^test/(\d+)', game_views.test_param),
+    url(r'^get_token/', common_views.set_cookie),
+    url(r'^register', common_views.create_user),
+    url(r'^login', common_views.login),
+    url(r'^logout', common_views.logout),
+    url(r'^modify_password', common_views.changing_password),
+    url(r'^start_game', common_views.start_game),
+    url(r'^game/', include('game.urls')),
 ]
