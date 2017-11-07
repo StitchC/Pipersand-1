@@ -1,3 +1,7 @@
+#### 拿csrf token ./get_token get
+no params
+
+
 #### 注册 ./register POST
 params
 - name: 用户名

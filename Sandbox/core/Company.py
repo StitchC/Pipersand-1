@@ -305,15 +305,6 @@ class Company(object):
         return True
 
 
-
-    def retrive_product(self):
-        """
-        客户端不需要调用这个，在完工入库阶段自动调用
-        """
-        # for line in self.big_workshop
-        pass
-
-
     def check_line_exist(self, workshop_id, line_id):
         """
         在做construct_line, sell_line, switch_product, line_produce的时候用的，先
@@ -413,6 +404,7 @@ class Company(object):
 
     def discount_receiable(self, period_values: dict):
         """
+        应收款贴现
         period_values是key为1234，value是贴现金额的dict
         """
         i, prin = self.receivables.discount(period_values)
@@ -435,6 +427,15 @@ class Company(object):
                 count_ = line.depreciate()
                 count += count_
         self.income_statement['累计折旧'] = count
+
+
+    def sell_stock(self, sell_dict):
+        """
+        出售库存
+        sell_dict是需要出售的材料和产品字典，例如
+        {'r1': 3, 'p3': 1}
+        """
+        pass
 
     '''
     自动调用的方法
@@ -471,6 +472,13 @@ class Company(object):
         price, items = self.logistic.update()
         self.cash -= price
         self.store.put(items)
+
+    def retrive_product(self):
+        """
+        客户端不需要调用这个，在完工入库阶段自动调用
+        """
+        # for line in self.big_workshop
+        pass
 
 
 

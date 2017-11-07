@@ -1,9 +1,11 @@
+###这里里面的所有API都是login require的
+
+
 #### 广告投放
 
 
 
 #### 长期贷款 /game/long_loan POST content_type="application/json"
-
 json keys
 - value: (int) 贷款额（正整数）
 - year: (int) 年限（[1..6]）
@@ -13,7 +15,7 @@ return
 - {'code': 400, 'msg': '贷款额度不足'}
 
 
-#### 短期贷款 /Company/short_loan POST content_type="application/json"
+#### 短期贷款 /game/short_loan POST content_type="application/json"
 json keys
 - value: (int) 贷款额（正整数）
 
@@ -22,7 +24,7 @@ return
 - {'code': 400, 'msg': '贷款额度不足'}
 
 
-#### 下原料订单 /Company/order_raw_material POST content_type="application/json"
+#### 下原料订单 /game/order_raw_material POST content_type="application/json"
 json keys
 - r1: (int) r1原材料数量
 - r2: (int) r2原材料数量
@@ -33,7 +35,7 @@ return
 - {'code': 200, 'msg': '成功'}
 
 
-#### 购买租用厂房 /Company/but_rent_workshop POST content_type="application/json"
+#### 购买租用厂房 /game/but_rent_workshop POST content_type="application/json"
 json keys
 - cmd: (string) 买还是租，你搞个单选框('buy' or 'rent')
 - workshop_type: (string) 厂房类型，单选框('small', 'medium', 'big')
@@ -43,7 +45,7 @@ return
 - {'code': 400, 'msg': '现金不足'}
 
 
-#### 新建生产线 /Company/new_line content_type="application/json"
+#### 新建生产线 /game/new_line POST content_type="application/json"
 json keys
 - workshop_id: (int)
 - line_id: (int)
@@ -55,7 +57,7 @@ return
 - {'code': 400, 'msg': '现金不足'}
 
 
-#### 在建生产线 /Company/construct_line content_type="application/json"
+#### 在建生产线 /game/construct_line POST content_type="application/json"
 json keys
 - workshop_id: (int)
 - line_id: (int)
@@ -65,7 +67,7 @@ return
 - {'code': 400, 'msg': '现金不足'}
 
 
-#### 生产线转产 Company/switch_product content_type="application/json"
+#### 生产线转产 /game/switch_product POST content_type="application/json"
 json keys
 - workshop_id: (int)
 - line_id: (int)
@@ -76,7 +78,7 @@ return
 - {'code': 400, 'msg': '现金不足'}
 
 
-#### 变卖生产线 Company/sell_line content_type="application/json"
+#### 变卖生产线 /game/sell_line POST content_type="application/json"
 json keys
 - workshop_id: (int)
 - line_id: (int)
@@ -85,7 +87,7 @@ return
 - {'code': 200, 'msg': '成功'}
 
 
-#### 紧急采购 Company/emergency_buy content_type="application/json"
+#### 紧急采购 /game/emergency_buy POST content_type="application/json"
 json keys
 - r1: (int) r1原材料数量，用户输入
 - r2: 同上
@@ -101,8 +103,8 @@ return
 - {'code': 402, 'msg': '没钱了，吃屎'}
 
 
-#### 开始下一批生产 Company/produce
-params
+#### 开始下一批生产 /game/produce POST content_type="application/json"
+json keys
 - workshop_id
 - line_id
 
@@ -111,19 +113,17 @@ return
 - {'code': 402, 'msg': '没钱了，吃屎'}
 
 
-#### 交货 Company/delivery
-params
-- company_id
-- order_id
+#### 交货 /game/delivery POST content_type="application/json"
+json keys
+- order_id: 
 
 return
 - {'code': 200, 'msg': '成功'}
 - {'code': 401, 'msg': '产品不够，不能交货'}
 
 
-#### 产品研发 Company/product_dev
-params
-- company_id
+#### 产品研发 /game/product_dev POST content_type="application/json"
+json keys
 - product_types: 要研发的产品，复选框['p1', 'p2', 'p3', 'p4']
 
 return
@@ -131,19 +131,16 @@ return
 <!-- 已经研发好了不能点 -->
 
 
-#### 新市场开拓 Company/market_dev
-params
-- company_id
+#### 新市场开拓 /game/market_dev POST content_type="application/json"
+json keys
 - markets: 要开拓的市场，复选框['本地','区域','国内','亚洲','国际']
 
 return
 - {'code': 200, 'msg': '成功'}
-<!-- 已经开拓好了不能点 -->
 
 
-#### 出售库存
-params
-- company_id
+#### 出售库存 /game/sell_stock POST content_type="application/json"
+json keys
 - r1: r1原材料数量，用户输入
 - r2
 - r3
@@ -157,9 +154,8 @@ return
 - {'code': 200, 'msg': '成功'}
 
 
-#### 贴现
-params
-- company_id
+#### 贴现 /game/discount_receiable POST content_type="application/json"
+json keys
 - recei1: 一账期应收款贴现额，用户输入
 - recei2:
 - recei3:
@@ -170,7 +166,6 @@ return
 - {'code': 401, 'msg': '应收款不存在'}
 
 
-#### ISO资格认证
-params
-- company_id
+#### ISO资格认证 /game/iso_dev POST content_type="application/json"
+json keys
 - ISOs: 要认证的资格，复选框['iso9','iso14']
