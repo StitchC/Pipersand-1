@@ -5,6 +5,7 @@ from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseNotAllo
 from django.contrib.auth import authenticate, get_user
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from django.utils import timezone
 
@@ -23,6 +24,7 @@ from datetime import datetime
 # 每次开始游戏，对会在字典里面创建一个key为company_id的Company object
 # game_obj = {}
 
+@ensure_csrf_cookie
 def home(request):
     return HttpResponse("welcome")
 
