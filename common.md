@@ -4,7 +4,7 @@ no params
 
 #### 注册 ./register POST
 params
-- name: 用户名
+- username: 用户名
 - password: 密码
 - email: 邮箱
 

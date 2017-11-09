@@ -1,6 +1,9 @@
 import configparser
 config = configparser.ConfigParser()
-config.read('C:/Users/67089/Documents/GitHub/Pipersand/Sandbox/core/setting.ini')
+try:
+    config.read_file(open('Sandbox/core/setting.ini'))
+except:
+    config.read('C:/Users/67089/Documents/GitHub/Pipersand/Sandbox/core/setting.ini')
 PRODUCTION_CENTER_CAPACITY = config['production center capacity']
 
 

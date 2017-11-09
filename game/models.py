@@ -16,14 +16,12 @@ class Profile(models.Model):
     user = models.OneToOneField(User, default=None, related_name='Profile')
 
 
-class Company(models.Model):
-    company_name = models.CharField(max_length=20)
-    members = models.CharField(max_length=200)
-
-    # password = models.CharField(max_length=30)
-
-    def get_member(self):
-        return json.loads(self.members)
+# class Company(models.Model):
+#     company_name = models.CharField(max_length=20)
+#     members = models.CharField(max_length=200)
+#
+#     def get_member(self):
+#         return json.loads(self.members)
 
 
 class Record(models.Model):

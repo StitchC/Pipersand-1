@@ -1,11 +1,21 @@
+from game.models import Profile, Record
+
 from django.shortcuts import render
+from django.utils import timezone
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed,
     HttpResponseBadRequest)
 
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, get_user
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
+
+import jsonpickle
+
+# import sys
+# sys.path.append("C:/Users/67089/Documents/GitHub/Pipersand")
+from Sandbox.core.Company import Company
 
 
 
@@ -17,7 +27,7 @@ def set_cookie(request):
 def create_user(request):
     """
     ./register POST
-    name: 用户名
+    username: 用户名
     password: 密码
     email: 邮箱
     """

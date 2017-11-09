@@ -2,20 +2,20 @@ from django.shortcuts import render
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed,
     HttpResponseBadRequest)
 
+from game.models import Record, Profile
 from django.utils import timezone
 
-from game.models import Company as Company_model, Record, Profile
-from game.forms import long_loanForm
-
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user
 
-import sys
-sys.path.append("C:/Users/67089/Documents/GitHub/Pipersand")
+# import sys
+# sys.path.append("C:/Users/67089/Documents/GitHub/Pipersand")
 from Sandbox.core.Company import Company
 
 import json
 import jsonpickle
 from datetime import datetime
+
 
 
 '''

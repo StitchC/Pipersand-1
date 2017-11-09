@@ -1,6 +1,9 @@
 import configparser
 config = configparser.ConfigParser()
-config.read('C:/Users/67089/Documents/GitHub/Pipersand/Sandbox/core/setting.ini')
+try:
+    config.read_file(open('Sandbox/core/setting.ini'))
+except:
+    config.read('C:/Users/67089/Documents/GitHub/Pipersand/Sandbox/core/setting.ini')
 CASH = int(config['initial_state']['CASH'])
 LOAN_LIMIT_COEFF = int(config['rules']['LOAN_LIMIT_COEFF'])
 PRODUCT_DEV_COST = config['product dev cost']
@@ -164,7 +167,7 @@ class Company(object):
         self.cash -= i + prin
         self.equity -= i
 
-    def long_loan(self, value: int, year: int) -> None:
+    def long_loan(self, value: int, year: int):
         """
         借长期负债
         :param value: 借款额

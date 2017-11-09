@@ -1,11 +1,15 @@
 from django.test import TestCase
-# from django.contrib.auth.models import check_pa
-from game.views import create_user, create_company
-from game.models import User, Company, Record, Profile
+from django.contrib.auth.models import User
+# from game.views import create_company
+from common.views import create_user
+from game.models import Record, Profile
 
 import jsonpickle
 import json
 
+import sys
+sys.path.append("C:/Users/67089/Documents/GitHub/Pipersand")
+from Sandbox.core.Company import Company
 
 
 # import json
@@ -14,7 +18,7 @@ import json
 class GameTestCase(TestCase):
     def test_new_user_register(self):
         response = self.client.post('/register',
-            data={'username': 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
+            data={"'username'": 'runtu881', 'password': 'runtuRmumu233', 'email': 'dsa@me.com'})
         # 状态码是200
         self.assertEqual(response.status_code, 200)
         # 数据库里面多一个user
